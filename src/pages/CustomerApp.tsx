@@ -205,12 +205,12 @@ export default function CustomerApp() {
     <div className="min-h-screen bg-paper text-ink font-sans flex flex-col md:grid md:grid-cols-[240px_1fr] overflow-hidden">
       {/* Sidebar Navigation */}
       <aside className="bg-brown-dark text-white py-10 flex flex-col md:h-screen md:overflow-y-auto">
-        <div className="px-8 pb-10 border-b border-white/10 hidden md:block">
-          <div className="w-48 mb-4">
+        <div className="px-4 pb-10 border-b border-white/10 hidden md:flex flex-col items-center">
+          <div className="w-48 bg-white p-2 rounded-lg shadow-sm">
             <img 
               src="https://rotiwala.ca/wp-content/uploads/2024/11/Roti-Wala-Logo-full5-1024x344.png" 
               alt="Roti Wala Logo" 
-              className="w-full h-auto object-contain object-center brightness-0 invert"
+              className="w-full h-auto object-contain object-center"
               referrerPolicy="no-referrer"
             />
           </div>
@@ -219,11 +219,11 @@ export default function CustomerApp() {
         {/* Mobile Header */}
         <div className="px-4 pb-4 flex justify-between items-center md:hidden">
           <div className="flex items-center gap-3">
-            <div className="w-24 flex-shrink-0">
+            <div className="w-24 flex-shrink-0 bg-white p-1 rounded-md shadow-sm">
               <img 
                 src="https://rotiwala.ca/wp-content/uploads/2024/11/Roti-Wala-Logo-full5-1024x344.png" 
                 alt="Logo" 
-                className="w-full h-auto object-contain object-center brightness-0 invert"
+                className="w-full h-auto object-contain object-center"
                 referrerPolicy="no-referrer"
               />
             </div>
