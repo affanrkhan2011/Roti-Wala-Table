@@ -148,17 +148,17 @@ export default function StaffDashboard() {
       {/* Header */}
       <header className="bg-white border-b border-line px-6 py-4 flex justify-between items-center sticky top-0 z-20 shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full overflow-hidden border border-line bg-white">
+          <div className="w-40 flex-shrink-0">
             <img 
-              src="https://rotiwala.ca/wp-content/uploads/2024/11/Roti-Logo-Circle.png" 
+              src="https://rotiwala.ca/wp-content/uploads/2024/11/Roti-Wala-Logo-full5-1024x344.png" 
               alt="Roti Wala Logo" 
-              className="w-full h-full object-cover object-center"
+              className="w-full h-auto object-contain object-left"
               referrerPolicy="no-referrer"
             />
           </div>
           <div>
-            <h1 className="text-2xl font-serif italic text-brown-dark">Roti Wala Staff</h1>
-            <div className="flex items-center gap-2 mt-1">
+            <h1 className="text-xl font-serif text-brown-dark font-medium border-l-2 border-line pl-4">Staff Dashboard</h1>
+            <div className="flex items-center gap-2 mt-1 pl-4">
               <div className={`w-2.5 h-2.5 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
               <span className="text-sm text-ink/60">{isConnected ? 'Live' : 'Disconnected'}</span>
             </div>

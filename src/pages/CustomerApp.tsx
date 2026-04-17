@@ -169,16 +169,14 @@ export default function CustomerApp() {
     return (
       <div className="min-h-screen bg-paper flex flex-col items-center justify-center p-6 font-sans text-ink">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center border-t-4 border-brown-dark">
-          <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-brown-dark bg-white flex items-center justify-center">
+          <div className="w-64 mx-auto mb-6 flex items-center justify-center">
             <img 
-              src="https://rotiwala.ca/wp-content/uploads/2024/11/Roti-Logo-Circle.png" 
+              src="https://rotiwala.ca/wp-content/uploads/2024/11/Roti-Wala-Logo-full5-1024x344.png" 
               alt="Roti Wala Logo" 
-              className="w-full h-full object-cover object-center"
+              className="w-full h-auto object-contain object-center"
               referrerPolicy="no-referrer"
             />
           </div>
-          <h1 className="text-3xl font-serif italic text-brown-light mb-2">Roti Wala Table</h1>
-          <p className="text-gray-600 mb-8 text-[11px] uppercase tracking-[2px]">Snack House &amp; Café in Vancouver</p>
           
           <form onSubmit={handleTableSubmit} className="space-y-4">
             <input
@@ -208,32 +206,29 @@ export default function CustomerApp() {
       {/* Sidebar Navigation */}
       <aside className="bg-brown-dark text-white py-10 flex flex-col md:h-screen md:overflow-y-auto">
         <div className="px-8 pb-10 border-b border-white/10 hidden md:block">
-          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 bg-white mb-4">
+          <div className="w-48 mb-4">
             <img 
-              src="https://rotiwala.ca/wp-content/uploads/2024/11/Roti-Logo-Circle.png" 
+              src="https://rotiwala.ca/wp-content/uploads/2024/11/Roti-Wala-Logo-full5-1024x344.png" 
               alt="Roti Wala Logo" 
-              className="w-full h-full object-cover object-center"
+              className="w-full h-auto object-contain object-center brightness-0 invert"
               referrerPolicy="no-referrer"
             />
           </div>
-          <h1 className="font-serif text-2xl italic text-brown-light leading-tight">Roti Wala</h1>
-          <p className="text-[11px] uppercase tracking-[2px] opacity-80 mt-2">Street Food</p>
         </div>
         
         {/* Mobile Header */}
         <div className="px-4 pb-4 flex justify-between items-center md:hidden">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden border border-white/20 bg-white">
+            <div className="w-24 flex-shrink-0">
               <img 
-                src="https://rotiwala.ca/wp-content/uploads/2024/11/Roti-Logo-Circle.png" 
+                src="https://rotiwala.ca/wp-content/uploads/2024/11/Roti-Wala-Logo-full5-1024x344.png" 
                 alt="Logo" 
-                className="w-full h-full object-cover object-center"
+                className="w-full h-auto object-contain object-center brightness-0 invert"
                 referrerPolicy="no-referrer"
               />
             </div>
             <div>
-              <h1 className="font-serif text-xl italic text-brown-light">Roti Wala</h1>
-              <p className="text-[10px] uppercase tracking-[2px] opacity-80">Table {tableNumber}</p>
+              <p className="text-[10px] uppercase tracking-[2px] opacity-80 text-white">Table {tableNumber}</p>
             </div>
           </div>
           {hasOrdered && (

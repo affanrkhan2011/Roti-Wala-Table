@@ -28,7 +28,7 @@ export default function App() {
     <HashRouter>
       <Routes>
         <Route path="/" element={<CustomerApp />} />
-        <Route path="/staff56789" element={<StaffDashboard />} />
+        <Route path="/staff12345" element={<StaffDashboard />} />
       </Routes>
     </HashRouter>
   );

@@ -1,6 +1,6 @@
 import https from 'https';
 
-https.get('https://nuruls.ca/', (res) => {
+https.get('https://rotiwala.ca/', (res) => {
   let data = '';
   res.on('data', (chunk) => {
     data += chunk;
