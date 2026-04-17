@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brown-light: #A67B5B;
+  --color-brown-dark: #4A2E1B;
+  --color-paper: #FFFFFF;
+  --color-ink: #2D1E12;
+  --color-line: rgba(74, 46, 27, 0.15);
+  --font-serif: 'Georgia', serif;
+  --font-sans: 'Helvetica Neue', Arial, sans-serif;
+}

@@ -1,0 +1,56 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: orders
+// Fields:
+//   - id: string (required)
+//   - table: string (required)
+//   - items: list (required)
+//   - subtotal: number (required)
+//   - status: string (required, 'NEW' | 'SEEN' | 'DONE')
+//   - timestamp: string (required, ISO format)
+//
+// Collection: billRequests
+// Fields:
+//   - id: string (required)
+//   - table: string (required)
+//   - orders: list (required)
+//   - total: number (required)
+//   - status: string (required, 'PENDING' | 'COMPLETED')
+//   - timestamp: string (required, ISO format)
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "affanrkhan2011@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    // For this demonstration, we'll allow public reads/writes to these collections 
+    // since the user hasn't asked for staff authentication yet.
+    // In a production app, /staff56789 should require isAdmin() check.
+    
+    match /orders/{orderId} {
+      allow read, write: if true; // Public access for the restaurant context
+    }
+    
+    match /billRequests/{requestId} {
+      allow read, write: if true; 
+    }
+    
+    match /users/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isAdmin();
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "Order": {
+      "title": "Order",
+      "description": "A food order placed by a customer at a table.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique order ID" },
+        "table": { "type": "string", "description": "Table number" },
+        "items": { "type": "array", "description": "List of ordered items" },
+        "subtotal": { "type": "number", "description": "Pre-tax total of the order" },
+        "status": { "type": "string", "enum": ["NEW", "SEEN", "DONE"], "description": "Current processing status" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "ISO timestamp of order placement" }
+      },
+      "required": ["id", "table", "items", "subtotal", "status", "timestamp"]
+    },
+    "BillRequest": {
+      "title": "Bill Request",
+      "description": "A request for a bill from a specific table.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique request ID" },
+        "table": { "type": "string", "description": "Table number" },
+        "orders": { "type": "array", "description": "All orders associated with this bill" },
+        "total": { "type": "number", "description": "Final total amount" },
+        "status": { "type": "string", "enum": ["PENDING", "COMPLETED"], "description": "Status of the bill request" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "ISO timestamp of the request" }
+      },
+      "required": ["id", "table", "orders", "total", "status", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Collection of all customer orders."
+    },
+    "/billRequests/{requestId}": {
+      "schema": "BillRequest",
+      "description": "Collection of bill payment requests."
+    }
+  }
+}
