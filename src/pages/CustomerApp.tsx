@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { MENU_CATEGORIES, MENU_ITEMS, MenuItem } from '../data/menu';
 import { ShoppingCart, Plus, Minus, Send, CreditCard, UtensilsCrossed } from 'lucide-react';
 import { db } from '../firebase';
-import { collection, addDoc, query, where, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, addDoc, query, where, onSnapshot, doc } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 
 type CartItem = MenuItem & { quantity: number; notes: string };
@@ -22,6 +22,21 @@ export default function CustomerApp() {
   const [hasOrdered, setHasOrdered] = useState(false);
   const [orderStatus, setOrderStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
   const [billStatus, setBillStatus] = useState<'idle' | 'requesting' | 'requested'>('idle');
+  const [unavailableItems, setUnavailableItems] = useState<Record<string, boolean>>({});
+
+  // Fetch unavailable menu items
+  useEffect(() => {
+    const unsubscribe = onSnapshot(doc(db, 'menuState', 'availability'), (snapshot) => {
+      if (snapshot.exists()) {
+        setUnavailableItems(snapshot.data() as Record<string, boolean>);
+      } else {
+        setUnavailableItems({});
+      }
+    }, (error) => {
+      console.error('Firestore Error (menu availability):', error);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Firestore listeners for real-time updates
   useEffect(() => {
@@ -338,7 +353,9 @@ export default function CustomerApp() {
                   </div>
                   
                   <div className="text-right flex flex-col items-end justify-between">
-                    <span className="font-serif text-lg font-bold block mb-2">${item.price.toFixed(2)}</span>
+                    <span className={`font-serif text-lg block mb-2 ${unavailableItems[item.id] ? 'opacity-50 line-through text-red-700' : 'font-bold'}`}>
+                      ${item.price.toFixed(2)}
+                    </span>
                     {cartItem ? (
                       <div className="flex items-center gap-3 bg-paper border border-brown-dark rounded-full px-2 py-1">
                         <button onClick={() => updateQuantity(item.id, -1)} className="p-1 text-brown-dark hover:bg-black/5 rounded-full">
@@ -349,6 +366,13 @@ export default function CustomerApp() {
                           <Plus className="w-3 h-3" />
                         </button>
                       </div>
+                    ) : unavailableItems[item.id] ? (
+                      <button
+                        disabled
+                        className="bg-red-50 text-red-600 border border-red-200 px-4 py-1.5 rounded-full font-semibold text-xs cursor-not-allowed opacity-80"
+                      >
+                        Unavailable
+                      </button>
                     ) : (
                       <button
                         onClick={() => addToCart(item)}

@@ -48,6 +48,10 @@ service cloud.firestore {
       allow read, write: if true; 
     }
     
+    match /menuState/{document=**} {
+      allow read, write: if true;
+    }
+    
     match /users/{userId} {
       allow read: if isAuthenticated() && request.auth.uid == userId;
       allow write: if isAdmin();

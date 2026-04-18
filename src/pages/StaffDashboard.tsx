@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Clock, CheckCircle, Eye, BellRing, Receipt, Trash2 } from 'lucide-react';
 import { db } from '../firebase';
-import { collection, query, onSnapshot, doc, updateDoc, orderBy } from 'firebase/firestore';
+import { collection, query, onSnapshot, doc, updateDoc, setDoc, orderBy } from 'firebase/firestore';
+import { MENU_CATEGORIES, MENU_ITEMS } from '../data/menu';
 
 type OrderItem = {
   id: string;
@@ -35,6 +36,8 @@ export default function StaffDashboard() {
   const [isConnected, setIsConnected] = useState(false);
   const [confirmingOrderId, setConfirmingOrderId] = useState<string | null>(null);
   const [confirmingBillId, setConfirmingBillId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'orders' | 'menu'>('orders');
+  const [unavailableItems, setUnavailableItems] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (confirmingOrderId || confirmingBillId) {
@@ -66,11 +69,31 @@ export default function StaffDashboard() {
       console.error('Firestore Error (billRequests):', error);
     });
 
+    const unsubscribeMenu = onSnapshot(doc(db, 'menuState', 'availability'), (snapshot) => {
+      if (snapshot.exists()) {
+        setUnavailableItems(snapshot.data() as Record<string, boolean>);
+      } else {
+        setUnavailableItems({});
+      }
+    }, (error) => console.error('Firestore Error (menu availability):', error));
+
     return () => {
       unsubscribeOrders();
       unsubscribeBills();
+      unsubscribeMenu();
     };
   }, []);
+
+  const toggleItemAvailability = async (itemId: string, currentlyUnavailable: boolean) => {
+    try {
+      const menuRef = doc(db, 'menuState', 'availability');
+      await setDoc(menuRef, {
+        [itemId]: !currentlyUnavailable
+      }, { merge: true });
+    } catch (error) {
+      console.error('Failed to update availability', error);
+    }
+  };
 
   const updateOrderStatus = async (id: string, status: 'SEEN' | 'DONE') => {
     try {
@@ -164,6 +187,20 @@ export default function StaffDashboard() {
             </div>
           </div>
         </div>
+        <div className="flex gap-4">
+          <button 
+            onClick={() => setActiveTab('orders')}
+            className={`px-4 py-2 rounded-lg font-bold transition-colors ${activeTab === 'orders' ? 'bg-brown-dark text-white' : 'bg-line/20 text-ink/70 hover:bg-line/40'}`}
+          >
+            Orders & Bills
+          </button>
+          <button 
+            onClick={() => setActiveTab('menu')}
+            className={`px-4 py-2 rounded-lg font-bold transition-colors ${activeTab === 'menu' ? 'bg-brown-dark text-white' : 'bg-line/20 text-ink/70 hover:bg-line/40'}`}
+          >
+            Menu Manager
+          </button>
+        </div>
         <div className="flex gap-6 text-sm font-medium">
           <div className="flex flex-col items-center">
             <span className="text-brown-light text-xl">{activeOrders.length}</span>
@@ -176,13 +213,15 @@ export default function StaffDashboard() {
         </div>
       </header>
 
-      <main className="p-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Left/Main Column: Active Orders */}
-        <div className="lg:col-span-2 space-y-6">
-          <h2 className="text-xl font-bold text-ink flex items-center gap-2">
-            <Clock className="w-5 h-5" /> Active Orders
-          </h2>
+      <main className="p-6 max-w-7xl mx-auto">
+        {activeTab === 'orders' ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Left/Main Column: Active Orders */}
+            <div className="lg:col-span-2 space-y-6">
+              <h2 className="text-xl font-bold text-ink flex items-center gap-2">
+                <Clock className="w-5 h-5" /> Active Orders
+              </h2>
           
           {activeOrders.length === 0 ? (
             <div className="bg-white rounded-xl p-8 text-center text-ink/60 border border-line">
@@ -321,8 +360,43 @@ export default function StaffDashboard() {
               </div>
             )}
           </div>
-
-        </div>
+          </div>
+          </div>
+        ) : (
+          <div className="space-y-8 max-w-4xl mx-auto bg-white p-6 md:p-10 rounded-xl border border-line shadow-sm">
+            <h2 className="text-2xl font-serif text-brown-dark border-b border-line pb-4 font-medium">Menu Manager</h2>
+            <p className="text-sm text-ink/60 mb-6">Mark items as unavailable to prevent customers from adding them to their orders.</p>
+            
+            {MENU_CATEGORIES.map(category => (
+              <div key={category} className="mb-8">
+                <h3 className="text-lg font-bold bg-brown-light/10 text-brown-dark px-4 py-2 rounded-t-md border-b border-brown-light/20">{category}</h3>
+                <div className="border border-line/50 border-t-0 rounded-b-md divide-y divide-line/30">
+                  {MENU_ITEMS.filter(i => i.category === category).map(item => {
+                    const isUnavailable = !!unavailableItems[item.id];
+                    return (
+                      <div key={item.id} className="flex justify-between items-center p-4 hover:bg-black/5 transition-colors">
+                        <div>
+                          <div className={`font-medium ${isUnavailable ? 'opacity-60 line-through' : 'text-ink'}`}>{item.name}</div>
+                          <div className="text-sm mt-1 font-serif text-brown-light">${item.price.toFixed(2)}</div>
+                        </div>
+                        <button
+                          onClick={() => toggleItemAvailability(item.id, isUnavailable)}
+                          className={`px-4 py-1.5 rounded-full font-bold text-xs uppercase tracking-wider transition-colors ${
+                            isUnavailable 
+                              ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 hover:border-red-300'
+                              : 'bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 hover:border-green-300'
+                          }`}
+                        >
+                          {isUnavailable ? 'Unavailable' : 'Available'}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );
